@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/theme.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/rivescript@latest/dist/rivescript.min.js"></script>
+
+    <title>Chatbot user mode</title>
+    </link>
+
+    <style>
+        /* The popup chat - hidden by default */
+        .chat-popup {
+            width: 100%;
+            height:50%;
+            position: fixed;
+            bottom: 0;
+            background-color: white;
+            border: 3px solid #f1f1f1;
+            overflow-y: scroll;
+        }
+
+        /* Add styles to the form container */
+        .form-container {
+            width: 100%;
+            height: 50%;
+            padding: 10px;
+            background-color: white;
+        }
+
+        /* Full-width textarea */
+        .form-container input {
+            width: 100%;
+            padding: 15px;
+            margin: 5px 0 22px 0;
+            border: none;
+            background: #f1f1f1;
+            min-height: 50px;
+            position:fixed;
+            bottom:0;
+        }
+
+        /* When the textarea gets focus, do something */
+        .form-container input:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+        /* Set a style for the submit/send button */
+        .form-container .btn {
+            background-color: hotpink;
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom:10px;
+            opacity: 0.8;
+        }
+
+        /* Add some hover effects to buttons */
+        .form-container .btn:hover, .open-button:hover {
+            opacity: 1;
+        }
+
+        .messages div {
+            max-width: 60%;
+            display: block;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 7px;
+        }
+
+        .messages .bot {
+            text-align: left;
+            margin-left: 45px;
+            background: lightpink;
+
+        }
+
+        .messages .self {
+            text-align: right;
+            margin-right: 45px;
+            background: #DDD
+        }
+
+        .title {
+            color:black;
+            background-color:white;
+            position: fixed;
+            padding: 10px;
+            top: 420px;
+            width:100%;
+        }
+
+        .bots img {
+             border-radius: 50%;
+             width: 100px;
+             height: 100px;
+             object-fit: cover;
+             transition: box-shadow ease 200ms;
+             margin: 4px;
+         }
+        .bots input:checked + img{
+            box-shadow: 0 0 0 5px white;
+        }
+        .bots input {
+            display: none;
+        }
+        #usernameBox {
+            display: none;
+        }
+    </style>
+</head>
+
+
+<body class="bg-primary" onload="selectBot()">
+
+<div class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="/login">User</a></li>
+    </ul>
+</div>
+
+<h1 class="display-2 card border-primary card-title text-primary text-center" id="titre">User Interface</h1>
+
+<div class="text-light text-center center">
+    <form method="POST">
+        <h2 class="display-4">Please select a bot to begin the chat</h2>
+        <div class="bots" id="bot">
+            <% for(var i = 0;i < botData.length; i++){ %>
+                <%if (botData[i].status==="online"){%>
+                    <label> <input type="checkbox" name="bots" value="<%= botData[i].name %>"> <img src='<%= botData[i].picture %>'> <%= botData[i].name %> </label>
+                <% } %>
+            <% } %>
+        </div>
+        <input type="text" name="username" id="usernameBox">
+
+        <button formaction="/selectBot" class="btn btn-outline-light btn-lg">Select</button>
+    </form>
+</div>
+
+
+<h1 class="title">Let's chat !</h1>
+<div class="chat-popup" id="chatbox">
+    <div class="messages"></div>
+    <div id="edge"></div>
+    <form action="/user" class="form-container" id="messenger">
+        <input id="inputmessage" type="text" placeholder="Type message..." name="msg" required>
+    </form>
+</div>
+
+
+
+<script>
+
+    let bot = new RiveScript();
+    var data = <%-JSON.stringify(botData)%>
+
+
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+
+    var dataUser = <%-JSON.stringify(userData)%>
+
+    function getIdByName(name, data){
+
+       for (var i=0; i < data.length; i++) {
+            if (data[i].name == name) {
+                return data[i].id;
+            }
+        }
+    }
+
+    const message_container = document.querySelector('.messages');
+    const form = document.querySelector('#messenger');
+    const input_box = document.querySelector('#inputmessage');
+
+    var botId = 0;
+    var botName = "bot";
+    var brains = [
+        'https://gist.githubusercontent.com/awesammcoder/91e0f6c527bfdc03b8815289ca4af150/raw/6410ce00b7e1ea0dbd28be03b6eaab64252a841d/brain.rive'
+    ];
+    var botPic = "/icons/unchosen.png";
+
+    var userId = 0;
+    var user = "user";
+    var userPic = "/icons/unchosen.png";
+
+    document.addEventListener("DOMContentLoaded", selectBot, false);
+
+    function updateUser(user){
+        userText=document.getElementById('usernameBox');
+        userText.value = user;
+    }
+
+    function selectBot(){
+        user = getQueryVariable("user");
+        botName = getQueryVariable("bot");
+        userId = getIdByName(user, dataUser);
+        botId = getIdByName(botName, data);
+        userPic = dataUser[userId-1].picture;
+        botPic = data[botId-1].picture;
+        brains = data[botId-1].brain;
+        updateUser(user);
+    }
+
+
+
+    bot.loadFile(brains).then(botReady).catch(botNotReady);
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        selfReply(input_box.value);
+        input_box.value = '';
+    });
+
+    function botReply(message){
+        message_container.innerHTML += '<img class="button-round-small" src='+botPic+'><div class="bot">'+message+'</div>';
+    }
+
+    function selfReply(message){
+        message_container.innerHTML += '<img class="button-round-small2" src='+userPic+'><div class="self">'+message+'</div>';
+
+        bot.reply("local-user", message).then(function(reply) {
+            botReply(reply);
+        });
+    }
+
+    function botReady(){
+        bot.sortReplies();
+        botReply('Hello');
+    }
+
+    function botNotReady(err){
+        console.log("An error has occurred.", err);
+    }
+
+    $('input[type="checkbox"]').on('change', function() {
+        $('input[type="checkbox"]').not(this).prop('checked', false);
+    });
+
+</script>
+
+</body>
+</html>

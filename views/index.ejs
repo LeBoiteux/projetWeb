@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/theme.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./admin.js"></script>
+    <title>Welcome to the Chatbot</title>
+    </link>
+</head>
+
+<body class="bg-primary">
+    <div class="text-light text-center center">
+        <h1 class="display-4">Welcome to my ChatBot project !</h1>
+        <form action="/admin" method="post">
+            <button class="btn btn-outline-light btn-lg" id="btadmin">Admin</button>
+            <button class="btn btn-outline-light btn-lg" id="btuser" formaction="/login" method="post">User</button>
+        </form>
+
+    </div>
+
+    <script src="https://unpkg.com/rivescript@latest/dist/rivescript.min.js"></script>
+
+</body>
+
+<style>
+    .center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+    
+    .btn {
+        font-size: 35px;
+    }
+
+</style>
+
+</html>
