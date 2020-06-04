@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/theme.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./admin.js"></script>
+    <title>Chatbot Administration</title>
+    </link>
+</head>
+
+<body class="bg-primary">
+    <div class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
+            <li class="nav-item"><a class="nav-link" href="/login">User</a></li>
+        </ul>
+    </div>
+    <div class="text-light text-center center">
+        <h1 class="display-2 card border-primary card-title text-primary" id="titre">Admin Interface</h1>
+        <div class="creation">
+            <h2 class="display-4">Create a new bot</h2>
+            <form method="POST">
+                <table id="creatingBot" class="table table-hover">
+                    <tr>
+                        <td><input id="textBox" type="text" class="form-control" name="botName" placeholder="Name the bot" required></td>
+                        <td><select class="form-control" name="botPerso" required>
+                                <option value="">Select a personality</option>
+                                <% for(var i = 0;i < brains.length; i++){ %>
+                                <option value='<%=brains[i].name%>'> <%= brains[i].name %> </option>
+                                <% } %>
+                            </select>
+                        </td>
+                        <td><button class="btn btn-outline-light btn-lg" formaction="/createBot">Create</button> </td>
+                    </tr>
+                </table>
+        </div>
+        </form>
+        <hr>
+        <div class="modification table-responsive">
+            <form method="POST">
+                <h2 class="display-4">Modify an existing bot</h2>
+                <table id="existingBots" class="table table-hover">
+                    <tr>
+                        <th>Name</th>
+                        <th></th>
+                        <th>Personality</th>
+                        <th></th>
+                        <th></th>
+                        <th>Status</th>
+                        <th>Use in Discord</th>
+                    </tr>
+                    <% for(var j = 0;j < bots.length; j++){ %>
+                    <tr>
+                        <td> <%= bots[j].name %></td>
+                        <td><input id="textBox" class="form-control" type="text" name="modBotName" placeholder="Change its name"> </td>
+                        <td><%= bots[j].personality %></td>
+                        <td><select id="selectBox" class="form-control" name="modBotPerso">
+                                <option value="">Select a personality</option>
+                                <% for(var k = 0;k < brains.length; k++){ %>
+                                <option value="<%= k%>"> <%= brains[k].name %> </option>
+                                <% } %>
+                            </select></td>
+                        <td><button class="btn btn-outline-light btn-lg" name="id" value="<%= bots[j].id %>" formaction="/modifyBot">Modify</button></td>
+                        <td>
+                            <% if (bots[j].status === "offline") {%>
+                                <button class="btn btn-dark" name="id" value="<%= j %>" formaction="/toggleOnOff">
+                                    Offline
+                                <% }else{ %>
+                                <button class="btn btn-success" name="id" value="<%= j %>" formaction="/toggleOnOff">
+                                    Online
+                                <% } %>
+                                </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline-primary" name="idForDiscord" value="<%= j %>" formaction="sendToDiscord"><img id="idForDiscord" src="public/icons/discord.png" title="Use this bot in Discord"></button>
+                        </td>
+                    </tr>
+                    <% } %>
+                </table>
+            </form>
+        </div>
+        <hr>
+        <div class="removal">
+            <form method="POST">
+                <h2 class="display-4">Delete a bot</h2>
+                <table id="deletingBots" class="table table-hover">
+                    <% for(var j = 0; j < bots.length; j++){ %>
+                    <tr>
+                        <td> <%= bots[j].name %></td>
+                        <td> <button class="btn btn-outline-light btn-lg" name="id" value="<%= j %>" formaction="/deleteBot">Delete</button>
+                        </td>
+                    </tr>
+                    <% } %>
+                </table>
+            </form>
+        </div>
+
+
+    </div>
+    <style>
+        #creatingBot {
+            margin-left: auto;
+            margin-right: auto;
+            width: 40%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        #existingBots {
+            font-weight: bold;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+            text-align: center;
+        }
+
+        #deletingBots {
+            font-weight: bold;
+            margin-left: auto;
+            margin-right: auto;
+            width: 30%
+        }
+
+        #textBox {
+            width: 100%;
+        }
+
+        #selectBox {
+            width: 100%
+        }
+
+        #idForDiscord {
+            width: 30px;
+            height: 30px;
+        }
+        
+        hr {
+            border: 2px solid white;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+    </style>
+</body>
+
+</html>
