@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Toi",
+    "picture": "/icons/1.svg"
+  },
+  {
+    "id": 2,
+    "name": "Moi",
+    "picture": "/icons/2.svg"
+  },
+  {
+    "id": 3,
+    "name": "Tout ceux qui le veulent",
+    "picture": "/icons/3.svg"
+  },
+  {
+    "id": 4,
+    "name": "Les autres",
+    "picture": "/icons/4.svg"
+  },
+  {
+    "id": 5,
+    "name": "Platy"
+  },
+  {
+    "id": 6,
+    "name": "Mojoe"
+  }
+]
